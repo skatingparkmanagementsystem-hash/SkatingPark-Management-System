@@ -1,0 +1,549 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.sidebar {
+  flex: 0 0 250px;
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.sidebar nav a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.sidebar nav a:hover {
+  background-color: #34495e;
+}
+
+.sidebar nav a.active {
+  background-color: #3498db;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: transparent;
+  margin: 0; /* keep main content full width but center inner content */
+}
+
+/* Center the main page content and prevent it from sitting behind the sidebar */
+.content-area {
+  /* Fill available space to the right of the sidebar.
+     No fixed max-width so the content stretches full area. */
+  width: calc(100% - 48px); /* account for margins/padding */
+  max-width: none;
+  margin: 24px;
+  background-color: white;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* Mobile responsiveness: keep desktop unchanged; only apply below 900px */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: -280px; /* hidden off-canvas */
+    top: 0;
+    bottom: 0;
+    z-index: 1200;
+    width: 260px;
+    padding: 18px;
+    transition: left 240ms ease-in-out, transform 240ms ease-in-out;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.12);
+    /* don't reserve flex space on mobile */
+    flex: 0 0 0;
+  }
+
+  .sidebar.mobile-open {
+    left: 0; /* slide in */
+  }
+
+  /* Mobile overlay placed between sidebar and main content */
+  .mobile-overlay {
+    display: none;
+  }
+
+  .mobile-overlay.show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.36);
+    z-index: 1150; /* below sidebar (1200) */
+  }
+
+  /* Make main-content flow normally under mobile (no left offset) */
+  .main-content {
+    padding: 12px;
+  }
+
+  .content-area {
+    width: auto;
+    max-width: 720px; /* center container for better readability on phones */
+    margin: 12px auto;
+    padding: 18px;
+    border-radius: 8px;
+  }
+
+  /* Compact typography and spacing for mobile */
+  html, body {
+    font-size: 14px; /* base font slightly smaller on mobile */
+  }
+
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; }
+  h3 { font-size: 1rem; }
+  p, label, input, select, textarea, button { font-size: 0.95rem; }
+
+  /* Reduce paddings on common containers */
+  .card, .section, .summary-card {
+    padding: 12px;
+  }
+
+  /* Make dashboard cards tighter */
+  .dashboard-cards {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+  }
+
+  /* If page uses inline .stats-grid, make those cards compact on mobile */
+  .stats-grid > div {
+    padding: 14px !important;
+    border-radius: 14px !important;
+  }
+  .stats-grid > div div[style*="fontSize: '3.5rem'"] {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+  }
+  .stats-grid > div small {
+    font-size: 0.78rem !important;
+  }
+  .stats-grid > div div[style*="fontSize: '0.9rem'"] {
+    font-size: 0.85rem !important;
+  }
+
+  /* Compact stat cards and values on mobile */
+  .modern-stat, .ModernStatValue, .modern-stat .value, .modern-stat .label {
+    padding: 8px !important;
+  }
+  .modern-stat .value, .ModernStatValue { font-size: 1.25rem !important; }
+  .modern-stat .label { font-size: 0.85rem !important; color: #4b5563; }
+
+  /* Buttons smaller */
+  button {
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+
+  /* Sidebar: make it narrower on mobile */
+  .sidebar {
+    width: 200px;
+    padding: 12px;
+  }
+
+  .sidebar.mobile-open {
+    width: 200px;
+  }
+
+  .sidebar-logo-container img {
+    max-width: 90px;
+    max-height: 60px;
+  }
+
+  .sidebar h2 {
+    font-size: 1rem;
+  }
+
+  .sidebar .label { font-size: 0.95rem; }
+
+  /* Navbar adjustments */
+  .navbar { padding: 8px 10px; }
+  .navbar-title { font-size: 1.05rem !important; }
+
+  /* Mobile navbar layout: center title, place user-info to the right */
+  .navbar .navbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .navbar-left { display: flex; align-items: center; gap: 8px; }
+  .navbar-title { flex: 1; text-align: center; margin: 0 6px; }
+  .user-info { display: flex; align-items: center; gap: 8px; }
+  .user-details { display: flex; flex-direction: column; align-items: flex-end; font-size: 0.9rem; }
+  .user-info .btn { padding: 6px 8px; font-size: 0.85rem; }
+
+  /* Reduce spacing in quick ticket grids */
+  .quick-ticket-grid { gap: 8px 10px; }
+  .quick-ticket-extra-grid { gap: 8px 10px; }
+
+  /* Compact forms */
+  input, select, textarea { padding: 8px; font-size: 0.95rem; }
+
+  /* Reduce modal sizes / margins */
+  .modal-content { padding: 12px; }
+
+  /* Make small utility components denser */
+  .user-info .user-name { font-size: 0.95rem; }
+  .user-info .user-role { font-size: 0.85rem; }
+
+  /* Ensure ticket quick actions and stats fit */
+  .modern-stat, .card, .summary-card { padding: 10px; }
+  .ModernStatValue, .modern-stat .value { font-size: 1.25rem; }
+
+  /* Tweak control-menu and hamburger sizing */
+  .hamburger-btn { padding: 6px 8px; font-size: 0.85rem; }
+
+
+  /* Strong mobile overrides to prevent page-level styles from forcing desktop offsets */
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .main-content .content-area {
+    max-width: 720px !important;
+    width: auto !important;
+    margin: 12px auto !important;
+    padding: 18px !important;
+    background-color: white !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+  }
+
+  /* Sales form: make left/right columns stack and compact on mobile */
+  .sales-page-wrapper .sales-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .sales-page-wrapper .sales-form-grid > div {
+    padding: 12px !important;
+  }
+
+  /* Reduce inner control paddings for compact mobile layout */
+  .sales-page-wrapper .form-control {
+    padding: 8px 10px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .sales-page-wrapper .form-grid input[type="number"],
+  .sales-page-wrapper .form-grid input[type="text"],
+  .sales-page-wrapper .form-grid textarea,
+  .sales-page-wrapper .form-grid select {
+    padding: 8px 10px !important;
+  }
+
+  /* Make action buttons smaller and wrap on mobile */
+  .sales-page-wrapper .form-actions {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .sales-page-wrapper .form-actions .btn, .sales-page-wrapper .form-actions .GradientButton {
+    width: 100% !important;
+  }
+
+  /* Compact sale item rows: stack fields vertically on small screens */
+  .sales-page-wrapper .sale-item-row {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    align-items: start !important;
+  }
+
+  .sales-page-wrapper .sale-item-row > div {
+    padding: 0 !important;
+  }
+
+  .sales-page-wrapper .sale-item-row input,
+  .sales-page-wrapper .sale-item-row .form-control {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 8px 10px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Make the small remove button less tall and aligned right */
+  .sales-page-wrapper .sale-item-row button[title="Remove item"] {
+    font-size: 1.2rem !important;
+    padding: 4px 6px !important;
+    line-height: 1 !important;
+  }
+
+  /* Show mobile toggle button in navbar */
+  .mobile-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 6px;
+    margin-right: 6px;
+    cursor: pointer;
+  }
+
+  /* Make stats grid even smaller on narrow phones */
+  .dashboard-cards.small-stats {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  /* Show a close button inside sliding sidebar */
+  .mobile-close-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 6px;
+  }
+
+  .mobile-close {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    padding: 6px 8px;
+    cursor: pointer;
+  }
+}
+
+/* Hide mobile toggle on larger screens */
+@media (min-width: 901px) {
+  .mobile-toggle { display: none; }
+}
+
+/* No collapsed sidebar behavior - content always centered by .content-area */
+
+/* Very small phones - extra compact rules */
+@media (max-width: 576px) {
+  body { padding: 10px; font-size: 13px; }
+
+  .content-area {
+    max-width: 94%;
+    margin: 10px auto !important;
+    padding: 12px !important;
+  }
+
+  .sidebar { width: 160px; padding: 8px; }
+  .sidebar.mobile-open { width: 160px; }
+  .sidebar-logo-container img { max-width: 72px; max-height: 54px; }
+  .sidebar h2 { font-size: 0.98rem; }
+  .sidebar .label { font-size: 0.88rem; }
+
+  .navbar { padding: 6px 8px; }
+  .navbar-title { font-size: 1rem !important; }
+
+  h1 { font-size: 1.15rem; }
+  h2 { font-size: 0.98rem; }
+  h3 { font-size: 0.92rem; }
+  p, label, input, select, textarea, button { font-size: 0.88rem; }
+
+  .dashboard-cards { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+  button { padding: 6px 10px; font-size: 0.9rem; }
+  .card, .section, .summary-card { padding: 10px; }
+  .modal-content { padding: 10px; }
+
+  /* Reduce Quick Ticket grids further */
+  .quick-ticket-grid { gap: 6px 8px; }
+  .quick-ticket-extra-grid { gap: 6px 8px; }
+
+  /* Extra compact stats on very small devices */
+  .dashboard-cards, .dashboard-cards.small-stats { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; }
+  .modern-stat .value, .ModernStatValue { font-size: 1.05rem !important; }
+  .modern-stat .label { font-size: 0.78rem !important; }
+}
+
+/* Allow dashboard hero on all screen sizes */
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.section {
+  margin: 25px 0;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.section h2 {
+  color: #34495e;
+  margin-bottom: 15px;
+}
+
+input, select, textarea {
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.data-table th, .data-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #34495e;
+  color: white;
+}
+
+.data-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-left: 4px solid #3498db;
+}
+
+.card h3 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.summary-card {
+  background: #e8f4fc;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.summary-card p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+label {
+  margin: 10px 5px;
+  display: inline-block;
+}
+
+textarea {
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Strong global mobile reset: ensure main content is visible on all pages
+   This block targets common selectors and uses !important so it overrides
+   page-level inline styles and per-page style blocks on small screens. */
+@media (max-width: 900px) {
+  html body .main-content,
+  html body #main-content,
+  html body .main,
+  html body [class*="main-content"] {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  html body .main-content .content-area,
+  html body .content-area,
+  html body [class*="content-area"] {
+    max-width: 720px !important;
+    width: auto !important;
+    margin: 12px auto !important;
+    padding: 16px !important;
+    background-color: white !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+  }
+
+  /* Also ensure any hero or container using inline styles doesn't overflow */
+  html body [style*="margin-left"] {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  html body .main-content,
+  html body #main-content,
+  html body .main,
+  html body [class*="main-content"] {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  html body .main-content .content-area,
+  html body .content-area,
+  html body [class*="content-area"] {
+    max-width: 94% !important;
+    margin: 8px auto !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06) !important;
+  }
+}
